@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game X-O Online</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <!-- Main Menu Screen -->
+    <div id="mainMenu" class="screen active">
+      <div class="container">
+        <h1 class="title">X-O Online</h1>
+        <p class="subtitle">Mot Nuoc Co - Dinh Giang Son</p>
+        <div class="player-name-form">
+          <label for="playerNameInput">Ten nguoi choi:</label>
+          <input
+            type="text"
+            id="playerNameInput"
+            placeholder="Nhap ten cua ban"
+            maxlength="20"
+            value=""
+          />
+        </div>
+        <div class="menu-buttons">
+          <button id="createRoomBtn" class="btn btn-primary">Tao phong</button>
+          <button id="joinRoomBtn" class="btn btn-secondary">
+            Tham gia phong
+          </button>
+          <button id="randomMatchBtn" class="btn btn-success">
+            Ghep ngau nhien
+          </button>
+          <button id="playAIBtn" class="btn btn-primary">Dau voi may</button>
+        </div>
+        <div id="roomInfo" class="room-info hidden">
+          <p>
+            Ma phong: <strong id="roomIdDisplay"></strong>
+            <button id="copyRoomId" class="btn btn-secondary copy-btn">
+              <span class="copy-text">Copy</span>
+            </button>
+          </p>
+          <p>Nguoi choi dang vao phong</p>
+        </div>
+        <div id="joinRoomForm" class="join-form hidden">
+          <input
+            type="text"
+            id="roomIdInput"
+            placeholder="Nhap ma phong"
+            maxlength="6"
+          />
+          <button id="confirmJoinBtn" class="btn btn-primary">Xac nhan</button>
+          <button id="cancelJoinBtn" class="btn btn-secondary">Huy</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/ai.js"></script>
+    <script src="js/client.js"></script>
+    <script src="js/game.js"></script>
+  </body>
+</html>
