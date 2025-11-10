@@ -162,3 +162,81 @@ body::before {
   color: #00aa00;
   opacity: 0.7;
 }
+
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.btn {
+  padding: 15px 20px;
+  font-size: 0.75em;
+  font-family: "Press Start 2P", cursive;
+  border: 3px solid;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  background: #1a1a1a;
+  box-shadow: 0 4px 0 #000, 0 0 10px currentColor;
+  text-shadow: 0 0 5px currentColor;
+}
+
+.btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #000, 0 0 5px currentColor;
+}
+
+.btn-primary {
+  color: #00ff00;
+  border-color: #00ff00;
+  text-shadow: 0 0 5px #00ff00;
+}
+
+.btn-primary:hover {
+  background: #001100;
+  box-shadow: 0 4px 0 #000, 0 0 15px #00ff00, 0 0 25px #00ff00;
+}
+
+.btn-secondary {
+  color: #ffff00;
+  border-color: #ffff00;
+  text-shadow: 0 0 5px #ffff00;
+}
+
+.btn-secondary:hover {
+  background: #111100;
+  box-shadow: 0 4px 0 #000, 0 0 15px #ffff00, 0 0 25px #ffff00;
+}
+
+.btn-success {
+  color: #00ffff;
+  border-color: #00ffff;
+  text-shadow: 0 0 5px #00ffff;
+}
+
+.btn-success:hover {
+  background: #001111;
+  box-shadow: 0 4px 0 #000, 0 0 15px #00ffff, 0 0 25px #00ffff;
+}
+
+.btn-danger {
+  color: #ff0000;
+  border-color: #ff0000;
+  text-shadow: 0 0 5px #ff0000;
+}
+
+.btn-danger:hover {
+  background: #110000;
+  box-shadow: 0 4px 0 #000, 0 0 15px #ff0000, 0 0 25px #ff0000;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
