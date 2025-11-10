@@ -1,0 +1,40 @@
+/* Retro Pixel Style CSS */
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+body {
+  font-family: "Press Start 2P", cursive;
+  background: #404050;
+  background-image: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.05) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(0, 0, 0, 0.05) 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.05) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(0, 0, 0, 0.05) 3px
+    );
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #00ff00;
+  font-size: 14px;
+  position: relative;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
