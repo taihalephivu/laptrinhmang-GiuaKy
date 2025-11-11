@@ -298,3 +298,7 @@ body::before {
     0 0 15px rgba(255, 255, 0, 0.5);
   color: #ffff00;
 }
+
+.hidden {
+  display: none !important;
+}
