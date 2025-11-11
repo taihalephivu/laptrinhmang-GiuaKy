@@ -58,7 +58,7 @@ class TicTacToeAI {
             }
         }
 
-        // Kiểm tra đường chéo phụ
+        
         for (let i = 0; i <= 5; i++) {
             for (let j = 4; j < 10; j++) {
                 let playerCount = 0;
