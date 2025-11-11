@@ -166,3 +166,31 @@ declineRematchBtn.addEventListener('click', () => {
         showMainMenu();
     }
 });
+
+// Socket event handlers
+socket.on('roomCreated', (data) => {
+    currentRoomId = data.roomId;
+    currentPlayer = data.player;
+    roomIdDisplay.textContent = data.roomId;
+    roomInfo.classList.remove('hidden');
+    joinRoomForm.classList.add('hidden');
+    if (data.players) {
+        updatePlayerNames(data.players);
+    }
+    
+    // Add click handler for copy button
+    const copyBtn = document.getElementById('copyRoomId');
+    copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(data.roomId).then(() => {
+            const copyText = copyBtn.querySelector('.copy-text');
+            copyText.textContent = 'Copied!';
+            copyBtn.classList.add('copied');
+            setTimeout(() => {
+                copyText.textContent = 'Copy';
+                copyBtn.classList.remove('copied');
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy text: ', err);
+        });
+    });
+});
