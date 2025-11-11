@@ -38,3 +38,205 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* CRT Scanline Effect */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(transparent 50%, rgba(0, 0, 0, 0.1) 50%);
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 10000;
+  animation: scanline 0.1s linear infinite;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(4px);
+  }
+}
+
+.screen {
+  display: none;
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.screen.active {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  background: #353545;
+  border: 4px solid #00ff00;
+  border-style: double;
+  padding: 30px;
+  box-shadow: 0 0 0 2px #000, 0 0 20px #00ff00,
+    inset 0 0 20px rgba(0, 255, 0, 0.2);
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  position: relative;
+}
+
+.container::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border: 2px solid #00ff00;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.title {
+  font-size: 2.2em;
+  margin-bottom: 15px;
+  color: #00ff00;
+  text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00,
+    3px 3px 0 #000, 3px 3px 5px rgba(0, 0, 0, 0.8);
+  line-height: 1.5;
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+
+.subtitle {
+  font-size: 0.75em;
+  color: #ffff00;
+  margin-bottom: 25px;
+  text-shadow: 2px 2px 0 #000, 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 5px #ffff00;
+  line-height: 1.6;
+  font-weight: bold;
+}
+
+.player-name-form {
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.player-name-form label {
+  display: block;
+  font-size: 0.65em;
+  color: #00ff00;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 0 #000, 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 5px #00ff00;
+  font-weight: bold;
+}
+
+.player-name-form input {
+  width: 100%;
+  padding: 12px;
+  font-size: 0.75em;
+  font-family: "Press Start 2P", cursive;
+  background: #1a1a1a;
+  border: 3px solid #00ff00;
+  color: #00ff88;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.3), 0 0 10px rgba(0, 255, 0, 0.4);
+  text-shadow: 0 0 5px #00ff00;
+}
+
+.player-name-form input:focus {
+  outline: none;
+  border-color: #ffff00;
+  box-shadow: inset 0 0 10px rgba(255, 255, 0, 0.3),
+    0 0 15px rgba(255, 255, 0, 0.5);
+  color: #ffff00;
+}
+
+.player-name-form input::placeholder {
+  color: #00aa00;
+  opacity: 0.7;
+}
+
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.btn {
+  padding: 15px 20px;
+  font-size: 0.75em;
+  font-family: "Press Start 2P", cursive;
+  border: 3px solid;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  background: #1a1a1a;
+  box-shadow: 0 4px 0 #000, 0 0 10px currentColor;
+  text-shadow: 0 0 5px currentColor;
+}
+
+.btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #000, 0 0 5px currentColor;
+}
+
+.btn-primary {
+  color: #00ff00;
+  border-color: #00ff00;
+  text-shadow: 0 0 5px #00ff00;
+}
+
+.btn-primary:hover {
+  background: #001100;
+  box-shadow: 0 4px 0 #000, 0 0 15px #00ff00, 0 0 25px #00ff00;
+}
+
+.btn-secondary {
+  color: #ffff00;
+  border-color: #ffff00;
+  text-shadow: 0 0 5px #ffff00;
+}
+
+.btn-secondary:hover {
+  background: #111100;
+  box-shadow: 0 4px 0 #000, 0 0 15px #ffff00, 0 0 25px #ffff00;
+}
+
+.btn-success {
+  color: #00ffff;
+  border-color: #00ffff;
+  text-shadow: 0 0 5px #00ffff;
+}
+
+.btn-success:hover {
+  background: #001111;
+  box-shadow: 0 4px 0 #000, 0 0 15px #00ffff, 0 0 25px #00ffff;
+}
+
+.btn-danger {
+  color: #ff0000;
+  border-color: #ff0000;
+  text-shadow: 0 0 5px #ff0000;
+}
+
+.btn-danger:hover {
+  background: #110000;
+  box-shadow: 0 4px 0 #000, 0 0 15px #ff0000, 0 0 25px #ff0000;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
