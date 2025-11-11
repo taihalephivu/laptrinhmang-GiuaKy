@@ -46,3 +46,30 @@ class TicTacToeAI {
             }
         }
     
+        for (let i = 0; i <= 5; i++) {
+            for (let j = 0; j <= 5; j++) {
+                let playerCount = 0;
+                let opponentCount = 0;
+                for (let k = 0; k < 5; k++) {
+                    if (board[i + k][j + k] === player) playerCount++;
+                    if (board[i + k][j + k] === opponent) opponentCount++;
+                }
+                score += this.evaluateSequence(playerCount, opponentCount);
+            }
+        }
+
+        // Kiểm tra đường chéo phụ
+        for (let i = 0; i <= 5; i++) {
+            for (let j = 4; j < 10; j++) {
+                let playerCount = 0;
+                let opponentCount = 0;
+                for (let k = 0; k < 5; k++) {
+                    if (board[i + k][j - k] === player) playerCount++;
+                    if (board[i + k][j - k] === opponent) opponentCount++;
+                }
+                score += this.evaluateSequence(playerCount, opponentCount);
+            }
+        }
+
+        return score;
+    }
