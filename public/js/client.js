@@ -58,3 +58,111 @@ playAIBtn.addEventListener('click', () => {
     initializeGame(gameBoard, currentPlayer);
     updateCellStates(); // Ensure cells are properly enabled for player's first turn
 });
+
+// Save player name when input changes
+playerNameInput.addEventListener('input', (e) => {
+    playerName = e.target.value.trim();
+    if (playerName) {
+        localStorage.setItem('playerName', playerName);
+    }
+});
+
+// Get player name (with default if empty)
+function getPlayerName() {
+    const name = playerNameInput.value.trim();
+    if (name) {
+        return name;
+    }
+    // Use socket.id if available, otherwise use a random name
+    if (socket.id) {
+        return `Player ${socket.id.substring(0, 6)}`;
+    }
+    return `Player ${Math.random().toString(36).substring(2, 8)}`;
+}
+
+// Event listeners
+createRoomBtn.addEventListener('click', () => {
+    // Kiểm tra nếu người chơi đã ở trong phòng
+    if (currentRoomId) {
+        showModal('Thong bao', 'Ban dang o trong mot phong! Hay thoat phong hien tai truoc.', () => {
+            hideModal();
+        });
+        return;
+    }
+    const name = getPlayerName();
+    socket.emit('create', { playerName: name });
+});
+
+joinRoomBtn.addEventListener('click', () => {
+    joinRoomForm.classList.remove('hidden');
+    roomInfo.classList.add('hidden');
+});
+
+cancelJoinBtn.addEventListener('click', () => {
+    joinRoomForm.classList.add('hidden');
+    roomIdInput.value = '';
+});
+
+confirmJoinBtn.addEventListener('click', () => {
+    const roomId = roomIdInput.value.trim().toUpperCase();
+    if (roomId.length === 6) {
+        const name = getPlayerName();
+        socket.emit('join', { roomId, playerName: name });
+    } else {
+        showModal('Loi', 'Ma phong phai co 6 ky tu!', () => {
+            hideModal();
+        });
+    }
+});
+
+randomMatchBtn.addEventListener('click', () => {
+    // Kiểm tra nếu người chơi đã ở trong phòng
+    if (currentRoomId) {
+        showModal('Thong bao', 'Ban dang o trong mot phong! Hay thoat phong hien tai truoc khi tim tran moi.', () => {
+            hideModal();
+        });
+        return;
+    }
+    const name = getPlayerName();
+    socket.emit('random', { playerName: name });
+    // Vô hiệu hóa nút để tránh nhấn nhiều lần
+    randomMatchBtn.disabled = true;
+    randomMatchBtn.textContent = 'Dang tim doi thu...';
+});
+
+leaveRoomBtn.addEventListener('click', () => {
+    if (isPlayingWithAI) {
+        showModal('Xac nhan', 'Ban co chac muon thoat tran dau?', () => {
+            hideModal();
+            showMainMenu();
+        }, () => {
+            hideModal();
+        });
+    } else {
+        showModal('Xac nhan', 'Ban co chac muon roi phong?', () => {
+            if (currentRoomId) {
+                socket.emit('leaveRoom', { roomId: currentRoomId });
+            }
+            hideModal();
+            showMainMenu();
+        }, () => {
+            hideModal();
+        });
+    }
+});
+
+// Rematch buttons
+acceptRematchBtn.addEventListener('click', () => {
+    if (currentRoomId) {
+        socket.emit('rematchAccept', { roomId: currentRoomId });
+        hideRematchRequest();
+    }
+});
+
+declineRematchBtn.addEventListener('click', () => {
+    if (currentRoomId) {
+        socket.emit('rematchDecline', { roomId: currentRoomId });
+        hideRematchRequest();
+        showMainMenu();
+    }
+});
