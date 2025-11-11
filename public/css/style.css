@@ -240,3 +240,65 @@ body::before {
   cursor: not-allowed;
   box-shadow: none;
 }
+
+.room-info {
+  margin-top: 20px;
+  padding: 15px;
+  background: #1a1a1a;
+  border: 2px solid #00ff00;
+  color: #00ff88;
+  font-size: 0.65em;
+  line-height: 1.8;
+  font-weight: bold;
+  box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.3);
+  text-shadow: 0 0 5px #00ff00;
+}
+
+.copy-btn {
+  padding: 5px 10px;
+  font-size: 0.9em;
+  margin-left: 10px;
+  vertical-align: middle;
+  min-width: 60px;
+}
+
+.copy-btn.copied {
+  background: #001100;
+  color: #00ff00;
+  border-color: #00ff00;
+}
+
+.join-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.join-form input {
+  padding: 12px;
+  font-size: 0.75em;
+  font-family: "Press Start 2P", cursive;
+  background: #1a1a1a;
+  border: 3px solid #00ff00;
+  border-radius: 0;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #00ff88;
+  font-weight: bold;
+  box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.3);
+  text-shadow: 0 0 5px #00ff00;
+}
+
+.join-form input:focus {
+  outline: none;
+  border-color: #ffff00;
+  box-shadow: inset 0 0 10px rgba(255, 255, 0, 0.3),
+    0 0 15px rgba(255, 255, 0, 0.5);
+  color: #ffff00;
+}
+
+.hidden {
+  display: none !important;
+}
