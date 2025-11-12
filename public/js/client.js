@@ -194,3 +194,45 @@ socket.on('roomCreated', (data) => {
         });
     });
 });
+
+socket.on('joined', (data) => {
+    currentRoomId = data.roomId;
+    currentPlayer = data.player;
+    gameBoard = data.board;
+    isMyTurn = data.currentPlayer === currentPlayer;
+    hideGameResult(); // Hide any previous game result
+    showGameScreen();
+    initializeGame(data.board, data.currentPlayer);
+    if (data.players) {
+        updatePlayerNames(data.players);
+    }
+    // Reset nút random match khi đã vào phòng thành công
+    randomMatchBtn.disabled = false;
+    randomMatchBtn.textContent = 'Ghep ngau nhien';
+});
+
+socket.on('playerJoined', (data) => {
+    // Update currentRoomId if not set (shouldn't happen, but just in case)
+    if (data.roomId && !currentRoomId) {
+        currentRoomId = data.roomId;
+    }
+    
+    if (currentRoomId && (data.roomId === currentRoomId || !data.roomId)) {
+        gameBoard = data.board;
+        isMyTurn = data.currentPlayer === currentPlayer;
+        hideGameResult(); // Hide any previous game result
+        
+        // If player 1 is still on main menu, switch to game screen
+        if (mainMenu.classList.contains('active')) {
+            showGameScreen();
+            initializeGame(data.board, data.currentPlayer);
+        } else {
+            updateGameBoard(data.board);
+        }
+        
+        updateCurrentPlayer(data.currentPlayer);
+        if (data.players) {
+            updatePlayerNames(data.players);
+        }
+    }
+});
