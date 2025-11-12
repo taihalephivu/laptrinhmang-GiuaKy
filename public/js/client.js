@@ -236,3 +236,33 @@ socket.on('playerJoined', (data) => {
         }
     }
 });
+
+socket.on('update', (data) => {
+    gameBoard = data.board;
+    isMyTurn = data.currentPlayer === currentPlayer;
+    updateGameBoard(data.board);
+    updateCurrentPlayer(data.currentPlayer);
+});
+
+socket.on('gameResult', (data) => {
+    gameBoard = data.board;
+    updateGameBoard(data.board);
+    showGameResult(data.result, data.winner);
+});
+
+socket.on('chatMessage', (message) => {
+    addChatMessage(message);
+});
+
+socket.on('playerLeft', (data) => {
+    showModal('Thong bao', data.message, () => {
+        hideModal();
+        showMainMenu();
+    });
+});
+
+socket.on('error', (data) => {
+    showModal('Loi', data.message, () => {
+        hideModal();
+    });
+});
