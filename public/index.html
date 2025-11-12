@@ -115,6 +115,40 @@
               </div>
             </div>
           </div>
+
+          <!-- Modal Dialog -->
+          <div id="modalDialog" class="modal-dialog hidden">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3 id="modalTitle">Thong bao</h3>
+              </div>
+              <div class="modal-body">
+                <p id="modalMessage"></p>
+              </div>
+              <div class="modal-footer">
+                <button id="modalConfirmBtn" class="btn btn-primary">
+                  Xac nhan
+                </button>
+                <button id="modalCancelBtn" class="btn btn-secondary hidden">
+                  Huy
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-container">
+            <div class="chat-header">Chat</div>
+            <div id="chatMessages" class="chat-messages"></div>
+            <div class="chat-input-container">
+              <input
+                type="text"
+                id="chatInput"
+                placeholder="Nhap tin nhan..."
+                maxlength="200"
+              />
+              <button id="sendChatBtn" class="btn btn-primary">Gui</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
