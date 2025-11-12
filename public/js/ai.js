@@ -95,9 +95,9 @@ class TicTacToeAI {
         return 0;
     }  
 
-     // Kiểm tra chiến thắng
+     
     checkWin(board, player) {
-        // Kiểm tra hàng ngang
+        
         for (let i = 0; i < 10; i++) {
             for (let j = 0; j <= 5; j++) {
                 let count = 0;
@@ -108,7 +108,7 @@ class TicTacToeAI {
             }
         }
 
-        // Kiểm tra hàng dọc
+       
         for (let i = 0; i <= 5; i++) {
             for (let j = 0; j < 10; j++) {
                 let count = 0;
@@ -119,7 +119,7 @@ class TicTacToeAI {
             }
         }
 
-        // Kiểm tra đường chéo chính
+       
         for (let i = 0; i <= 5; i++) {
             for (let j = 0; j <= 5; j++) {
                 let count = 0;
