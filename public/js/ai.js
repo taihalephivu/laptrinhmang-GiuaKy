@@ -73,3 +73,24 @@ class TicTacToeAI {
 
         return score;
     }
+
+    
+    evaluateSequence(playerCount, opponentCount) {
+        if (opponentCount === 0) {
+            switch (playerCount) {
+                case 4: return 1000;
+                case 3: return 100;
+                case 2: return 10;
+                case 1: return 1;
+            }
+        }
+        if (playerCount === 0) {
+            switch (opponentCount) {
+                case 4: return -1000;
+                case 3: return -100;
+                case 2: return -10;
+                case 1: return -1;
+            }
+        }
+        return 0;
+    }  
