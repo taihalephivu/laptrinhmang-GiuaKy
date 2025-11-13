@@ -83,5 +83,63 @@ function checkDraw(board) {
 // connect socket
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
-  
+  // Create room
+  socket.on('create', (data) => {
+    const roomId = generateRoomId();
+    const room = {
+      id: roomId,
+      players: [socket.id],
+      board: createEmptyBoard(),
+      currentPlayer: 'X',
+      status: 'waiting',
+      messages: []
+    };
+    rooms.set(roomId, room);
+    const playerName = data?.playerName || `Player ${socket.id.substring(0, 6)}`;
+    players.set(socket.id, { roomId, player: 'X', name: playerName });
+    
+    socket.join(roomId);
+    socket.emit('roomCreated', { 
+      roomId, 
+      player: 'X',
+      players: [{ roomId, player: 'X', name: playerName }]
+    });
+    console.log(`Room created: ${roomId} by ${socket.id} as ${playerName}`);
+  });
+
+  // Join room
+  socket.on('join', (data) => {
+    const { roomId, playerName: clientPlayerName } = data;
+    const room = rooms.get(roomId);
+
+    if (!room) {
+      socket.emit('error', { message: 'Phong khong ton tai!' });
+      return;
+    }
+
+    if (room.players.length >= 2) {
+      socket.emit('error', { message: 'Phong da day!' });
+      return;
+    }
+
+    if (room.players.includes(socket.id)) {
+      socket.emit('error', { message: 'Ban da o trong phong nay!' });
+      return;
+    }
+
+    room.players.push(socket.id);
+    room.status = 'playing';
+    const player = 'O'; // Second player is always O
+    const playerName = clientPlayerName || `Player ${socket.id.substring(0, 6)}`;
+    players.set(socket.id, { roomId, player, name: playerName });
+
+    socket.join(roomId);
+    const allPlayers = room.players.map(id => players.get(id));
+    socket.emit('joined', { 
+      roomId, 
+      player, 
+      board: room.board, 
+      currentPlayer: room.currentPlayer,
+      players: allPlayers
+    });
 
