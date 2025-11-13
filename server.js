@@ -79,3 +79,9 @@ function checkDraw(board) {
     }
     return true;
   }
+  
+// connect socket
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+  
+
