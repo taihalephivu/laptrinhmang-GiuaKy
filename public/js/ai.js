@@ -217,5 +217,18 @@ class TicTacToeAI {
             [1, -1],  [1, 0],  [1, 1]
         ];
 
-    
+    for (let i = 0; i < 10; i++) {
+            for (let j = 0; j < 10; j++) {
+                if (board[i][j]) {
+                    // Thêm các ô xung quanh vào danh sách nước đi hợp lệ
+                    for (const [dx, dy] of directions) {
+                        const newRow = i + dx;
+                        const newCol = j + dy;
+                        if (newRow >= 0 && newRow < 10 && newCol >= 0 && newCol < 10 && !board[newRow][newCol]) {
+                            moves.add(JSON.stringify({row: newRow, col: newCol}));
+                        }
+                    }
+                }
+            }
+        }
 }
