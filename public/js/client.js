@@ -266,3 +266,195 @@ socket.on('error', (data) => {
         hideModal();
     });
 });
+
+// Rematch handlers
+socket.on('rematchRequested', (data) => {
+    showRematchRequest();
+});
+
+socket.on('rematchAccepted', (data) => {
+    hideRematchRequest();
+    hideGameResult();
+    // Reset game
+    if (data.board && data.currentPlayer) {
+        gameBoard = data.board;
+        isMyTurn = data.currentPlayer === currentPlayer;
+        initializeGame(data.board, data.currentPlayer);
+        updateCurrentPlayer(data.currentPlayer);
+        if (data.players) {
+            updatePlayerNames(data.players);
+        }
+    }
+    // Reset rematch button
+    const playAgainBtn = document.getElementById('playAgainBtn');
+    if (playAgainBtn) {
+        playAgainBtn.disabled = false;
+        playAgainBtn.textContent = 'Tai dau';
+    }
+});
+
+socket.on('rematchDeclined', (data) => {
+    hideRematchRequest();
+    showModal('Thong bao', 'Doi thu da tu choi tai dau!', () => {
+        hideModal();
+        showMainMenu();
+    });
+});
+
+socket.on('rematchCancelled', (data) => {
+    hideRematchRequest();
+    const playAgainBtn = document.getElementById('playAgainBtn');
+    if (playAgainBtn) {
+        playAgainBtn.disabled = false;
+        playAgainBtn.textContent = 'Tai dau';
+    }
+});
+
+// UI functions
+function showMainMenu() {
+    mainMenu.classList.add('active');
+    gameScreen.classList.remove('active');
+    hideGameResult(); // Hide any game result when leaving room
+    currentRoomId = null;
+    currentPlayer = null;
+    gameBoard = null;
+    roomInfo.classList.add('hidden');
+    joinRoomForm.classList.add('hidden');
+    roomIdInput.value = '';
+    isPlayingWithAI = false; // Reset AI game state
+    ai = null; // Clear AI instance
+}
+
+function showGameScreen() {
+    mainMenu.classList.remove('active');
+    gameScreen.classList.add('active');
+    roomInfo.classList.add('hidden');
+    joinRoomForm.classList.add('hidden');
+    // Update chat visibility depending on whether player is vs AI or human
+    updateChatVisibility();
+}
+
+// Show or hide chat depending on opponent type
+function updateChatVisibility() {
+    const chatContainer = document.querySelector('.chat-container');
+    if (!chatContainer) return;
+
+    if (isPlayingWithAI) {
+        chatContainer.classList.add('hidden');
+    } else {
+        chatContainer.classList.remove('hidden');
+    }
+}
+
+function initializeGame(board, currentPlayerTurn) {
+    hideGameResult(); // Hide any previous game result
+    createBoard(board);
+    updateCurrentPlayer(currentPlayerTurn);
+    clearChat();
+}
+
+function createBoard(board) {
+    const gameBoardElement = document.getElementById('gameBoard');
+    gameBoardElement.innerHTML = '';
+    
+    for (let row = 0; row < 10; row++) {
+        for (let col = 0; col < 10; col++) {
+            const cell = document.createElement('button');
+            cell.className = 'cell';
+            cell.dataset.row = row;
+            cell.dataset.col = col;
+            
+            if (board[row][col] === 'X') {
+                cell.textContent = 'X';
+                cell.classList.add('x');
+                cell.classList.add('disabled');
+            } else if (board[row][col] === 'O') {
+                cell.textContent = 'O';
+                cell.classList.add('o');
+                cell.classList.add('disabled');
+            }
+            
+            cell.addEventListener('click', () => handleCellClick(row, col, cell));
+            gameBoardElement.appendChild(cell);
+        }
+    }
+}
+
+function updateGameBoard(board) {
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach((cell, index) => {
+        const row = Math.floor(index / 10);
+        const col = index % 10;
+        const value = board[row][col];
+        
+        cell.textContent = value || '';
+        cell.classList.remove('x', 'o', 'disabled');
+        
+        if (value === 'X') {
+            cell.classList.add('x', 'disabled');
+        } else if (value === 'O') {
+            cell.classList.add('o', 'disabled');
+        }
+    });
+    
+    // Enable/disable cells based on turn
+    cells.forEach(cell => {
+        if (!cell.textContent && !isMyTurn) {
+            cell.classList.add('disabled');
+        } else if (!cell.textContent && isMyTurn) {
+            cell.classList.remove('disabled');
+        }
+    });
+}
+
+function handleCellClick(row, col, cell) {
+    if (!isMyTurn || cell.textContent) {
+        return;
+    }
+
+    if (isPlayingWithAI) {
+        // Handle move in AI game
+        makeMove(row, col);
+        if (!checkGameEnd()) {
+            // AI's turn
+            isMyTurn = false;
+            updateCurrentPlayer('O');
+            updateCellStates(); // Disable all cells during AI's turn
+            
+            setTimeout(() => {
+                const aiMove = ai.findBestMove(gameBoard, 'O');
+                makeMove(aiMove.row, aiMove.col);
+                isMyTurn = true;
+                updateCurrentPlayer('X');
+                updateCellStates(); // Re-enable empty cells for player's turn
+                checkGameEnd();
+            }, 500);
+        }
+    } else if (currentRoomId) {
+        // Handle move in online game
+        socket.emit('move', {
+            roomId: currentRoomId,
+            row: row,
+            col: col
+        });
+    }
+}
+
+function updateCellStates() {
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach((cell) => {
+        if (!cell.textContent) { // Chỉ cập nhật trạng thái cho các ô trống
+            if (isMyTurn) {
+                cell.classList.remove('disabled');
+            } else {
+                cell.classList.add('disabled');
+            }
+        }
+    });
+}
+
+function makeMove(row, col) {
+    const currentSymbol = isMyTurn ? 'X' : 'O';
+    gameBoard[row][col] = currentSymbol;
+    updateGameBoard(gameBoard);
+}
