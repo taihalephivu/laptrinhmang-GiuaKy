@@ -406,3 +406,55 @@ function updateGameBoard(board) {
         }
     });
 }
+
+function handleCellClick(row, col, cell) {
+    if (!isMyTurn || cell.textContent) {
+        return;
+    }
+
+    if (isPlayingWithAI) {
+        // Handle move in AI game
+        makeMove(row, col);
+        if (!checkGameEnd()) {
+            // AI's turn
+            isMyTurn = false;
+            updateCurrentPlayer('O');
+            updateCellStates(); // Disable all cells during AI's turn
+            
+            setTimeout(() => {
+                const aiMove = ai.findBestMove(gameBoard, 'O');
+                makeMove(aiMove.row, aiMove.col);
+                isMyTurn = true;
+                updateCurrentPlayer('X');
+                updateCellStates(); // Re-enable empty cells for player's turn
+                checkGameEnd();
+            }, 500);
+        }
+    } else if (currentRoomId) {
+        // Handle move in online game
+        socket.emit('move', {
+            roomId: currentRoomId,
+            row: row,
+            col: col
+        });
+    }
+}
+
+function updateCellStates() {
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach((cell) => {
+        if (!cell.textContent) { // Chỉ cập nhật trạng thái cho các ô trống
+            if (isMyTurn) {
+                cell.classList.remove('disabled');
+            } else {
+                cell.classList.add('disabled');
+            }
+        }
+    });
+}
+
+function makeMove(row, col) {
+    const currentSymbol = isMyTurn ? 'X' : 'O';
+    gameBoard[row][col] = currentSymbol;
+    updateGameBoard(gameBoard);
+}
