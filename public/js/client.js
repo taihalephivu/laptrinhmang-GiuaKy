@@ -266,3 +266,46 @@ socket.on('error', (data) => {
         hideModal();
     });
 });
+
+// Rematch handlers
+socket.on('rematchRequested', (data) => {
+    showRematchRequest();
+});
+
+socket.on('rematchAccepted', (data) => {
+    hideRematchRequest();
+    hideGameResult();
+    // Reset game
+    if (data.board && data.currentPlayer) {
+        gameBoard = data.board;
+        isMyTurn = data.currentPlayer === currentPlayer;
+        initializeGame(data.board, data.currentPlayer);
+        updateCurrentPlayer(data.currentPlayer);
+        if (data.players) {
+            updatePlayerNames(data.players);
+        }
+    }
+    // Reset rematch button
+    const playAgainBtn = document.getElementById('playAgainBtn');
+    if (playAgainBtn) {
+        playAgainBtn.disabled = false;
+        playAgainBtn.textContent = 'Tai dau';
+    }
+});
+
+socket.on('rematchDeclined', (data) => {
+    hideRematchRequest();
+    showModal('Thong bao', 'Doi thu da tu choi tai dau!', () => {
+        hideModal();
+        showMainMenu();
+    });
+});
+
+socket.on('rematchCancelled', (data) => {
+    hideRematchRequest();
+    const playAgainBtn = document.getElementById('playAgainBtn');
+    if (playAgainBtn) {
+        playAgainBtn.disabled = false;
+        playAgainBtn.textContent = 'Tai dau';
+    }
+});
