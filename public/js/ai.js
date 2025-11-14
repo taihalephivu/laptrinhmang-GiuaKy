@@ -208,3 +208,14 @@ class TicTacToeAI {
 
         return bestMove;
     }
+
+    getValidMoves(board) {
+        const moves = new Set();
+        const directions = [
+            [-1, -1], [-1, 0], [-1, 1],
+            [0, -1],           [0, 1],
+            [1, -1],  [1, 0],  [1, 1]
+        ];
+
+    
+}
