@@ -224,3 +224,60 @@ io.on('connection', (socket) => {
       });
     }
   });
+
+  
+  // Make a move
+  socket.on('move', (data) => {
+    const { roomId, row, col } = data;
+    const room = rooms.get(roomId);
+    const playerData = players.get(socket.id);
+
+    if (!room || !playerData) {
+      socket.emit('error', { message: 'Khong tim thay phong hoac nguoi choi!' });
+      return;
+    }
+
+    if (room.status !== 'playing') {
+      socket.emit('error', { message: 'Tro choi chua bat dau hoac da ket thuc!' });
+      return;
+    }
+
+    if (room.currentPlayer !== playerData.player) {
+      socket.emit('error', { message: 'Chua den luot cua ban!' });
+      return;
+    }
+
+    if (room.board[row][col] !== null) {
+      socket.emit('error', { message: 'O nay da duoc danh!' });
+      return;
+    }
+
+    // Make the move
+    room.board[row][col] = playerData.player;
+    
+    // Check win
+    const isWin = checkWin(room.board, row, col, playerData.player);
+    const isDraw = !isWin && checkDraw(room.board);
+
+    if (isWin) {
+      room.status = 'finished';
+      io.to(roomId).emit('gameResult', {
+        result: playerData.player === 'X' ? 'X' : 'O',
+        winner: playerData.player,
+        board: room.board
+      });
+    } else if (isDraw) {
+      room.status = 'finished';
+      io.to(roomId).emit('gameResult', {
+        result: 'draw',
+        board: room.board
+      });
+    } else {
+      // Switch player
+      room.currentPlayer = room.currentPlayer === 'X' ? 'O' : 'X';
+      io.to(roomId).emit('update', {
+        board: room.board,
+        currentPlayer: room.currentPlayer
+      });
+    }
+  });
