@@ -303,3 +303,42 @@ io.on('connection', (socket) => {
 
     io.to(roomId).emit('chatMessage', chatMessage);
   });
+
+  // Leave room
+  socket.on('leaveRoom', (data) => {
+    const { roomId } = data;
+    const playerData = players.get(socket.id);
+    
+    if (playerData && playerData.roomId === roomId) {
+      const room = rooms.get(roomId);
+      if (room) {
+        room.players = room.players.filter(id => id !== socket.id);
+        socket.leave(roomId);
+        
+        if (room.players.length === 0) {
+          rooms.delete(roomId);
+        } else {
+          // Notify remaining player
+          io.to(roomId).emit('playerLeft', { message: 'Doi thu da roi phong!' });
+        }
+      }
+      players.delete(socket.id);
+    }
+  });
+
+  // Rematch request
+  socket.on('rematchRequest', (data) => {
+    const { roomId } = data;
+    const room = rooms.get(roomId);
+    const playerData = players.get(socket.id);
+
+    if (!room || !playerData || room.status !== 'finished') {
+      return;
+    }
+
+    // Notify other player
+    const otherPlayerId = room.players.find(id => id !== socket.id);
+    if (otherPlayerId) {
+      io.to(otherPlayerId).emit('rematchRequested', { roomId });
+    }
+  });
