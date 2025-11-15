@@ -1,11 +1,11 @@
 class TicTacToeAI {
     constructor() {
-        this.maxDepth = 2; // Độ sâu tìm kiếm cho minimax
+        this.maxDepth = 2; 
     }
 
-    // Hàm đánh giá trạng thái bàn cờ
+    //
     evaluate(board, player) {
-        // Kiểm tra chiến thắng
+        
         if (this.checkWin(board, player)) {
             return player === 'X' ? 100 : -100;
         }
@@ -13,16 +13,16 @@ class TicTacToeAI {
             return player === 'X' ? -100 : 100;
         }
 
-        // Tính điểm dựa trên số lượng cơ hội thắng
+        
         return this.evaluatePosition(board, player);
     }
 
-    // Đánh giá vị trí dựa trên số lượng cơ hội thắng
+    
     evaluatePosition(board, player) {
         let score = 0;
         const opponent = player === 'X' ? 'O' : 'X';
 
-        // Kiểm tra theo hàng
+       
         for (let i = 0; i < 10; i++) {
             for (let j = 0; j <= 5; j++) {
                 let playerCount = 0;
@@ -35,7 +35,7 @@ class TicTacToeAI {
             }
         }
 
-        // Kiểm tra theo cột
+        
         for (let i = 0; i <= 5; i++) {
             for (let j = 0; j < 10; j++) {
                 let playerCount = 0;
@@ -48,7 +48,7 @@ class TicTacToeAI {
             }
         }
 
-        // Kiểm tra đường chéo chính
+       
         for (let i = 0; i <= 5; i++) {
             for (let j = 0; j <= 5; j++) {
                 let playerCount = 0;
@@ -61,7 +61,7 @@ class TicTacToeAI {
             }
         }
 
-        // Kiểm tra đường chéo phụ
+       
         for (let i = 0; i <= 5; i++) {
             for (let j = 4; j < 10; j++) {
                 let playerCount = 0;
@@ -77,7 +77,7 @@ class TicTacToeAI {
         return score;
     }
 
-    // Đánh giá giá trị của một chuỗi X-O
+    
     evaluateSequence(playerCount, opponentCount) {
         if (opponentCount === 0) {
             switch (playerCount) {
@@ -98,9 +98,9 @@ class TicTacToeAI {
         return 0;
     }
 
-    // Kiểm tra chiến thắng
+    
     checkWin(board, player) {
-        // Kiểm tra hàng ngang
+       
         for (let i = 0; i < 10; i++) {
             for (let j = 0; j <= 5; j++) {
                 let count = 0;
@@ -111,7 +111,7 @@ class TicTacToeAI {
             }
         }
 
-        // Kiểm tra hàng dọc
+        
         for (let i = 0; i <= 5; i++) {
             for (let j = 0; j < 10; j++) {
                 let count = 0;
@@ -122,7 +122,7 @@ class TicTacToeAI {
             }
         }
 
-        // Kiểm tra đường chéo chính
+        
         for (let i = 0; i <= 5; i++) {
             for (let j = 0; j <= 5; j++) {
                 let count = 0;
@@ -133,7 +133,7 @@ class TicTacToeAI {
             }
         }
 
-        // Kiểm tra đường chéo phụ
+        
         for (let i = 0; i <= 5; i++) {
             for (let j = 4; j < 10; j++) {
                 let count = 0;
@@ -147,7 +147,7 @@ class TicTacToeAI {
         return false;
     }
 
-
+    
     minimax(board, depth, alpha, beta, isMaximizing, player) {
         if (depth === 0) {
             return this.evaluate(board, player);
@@ -209,6 +209,7 @@ class TicTacToeAI {
         return bestMove;
     }
 
+    
     getValidMoves(board) {
         const moves = new Set();
         const directions = [
@@ -217,10 +218,11 @@ class TicTacToeAI {
             [1, -1],  [1, 0],  [1, 1]
         ];
 
-    for (let i = 0; i < 10; i++) {
+      
+        for (let i = 0; i < 10; i++) {
             for (let j = 0; j < 10; j++) {
                 if (board[i][j]) {
-                    // Thêm các ô xung quanh vào danh sách nước đi hợp lệ
+                    
                     for (const [dx, dy] of directions) {
                         const newRow = i + dx;
                         const newCol = j + dy;
@@ -231,4 +233,12 @@ class TicTacToeAI {
                 }
             }
         }
+
+       
+        if (moves.size === 0) {
+            moves.add(JSON.stringify({row: 4, col: 4}));
+        }
+
+        return Array.from(moves).map(move => JSON.parse(move));
+    }
 }
