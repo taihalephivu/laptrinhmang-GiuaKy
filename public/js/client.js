@@ -519,3 +519,114 @@ function updatePlayerNames(players) {
         });
     }
 }
+
+function hideGameResult() {
+    const gameResult = document.getElementById('gameResult');
+    gameResult.classList.add('hidden');
+}
+
+function showGameResult(result, winner) {
+    const gameResult = document.getElementById('gameResult');
+    const resultMessage = document.getElementById('resultMessage');
+    
+    gameResult.classList.remove('hidden');
+    
+    if (result === 'draw') {
+        resultMessage.textContent = 'Hoa!';
+        resultMessage.className = 'result-message draw';
+    } else if (result === currentPlayer) {
+        resultMessage.textContent = 'Ban thang! 🎉';
+        resultMessage.className = 'result-message win';
+    } else {
+        resultMessage.textContent = 'Ban thua! 😢';
+        resultMessage.className = 'result-message lose';
+    }
+    
+    // Disable all cells
+    document.querySelectorAll('.cell').forEach(cell => {
+        cell.classList.add('disabled');
+    });
+    
+    // Rematch button
+    const playAgainBtn = document.getElementById('playAgainBtn');
+    playAgainBtn.textContent = 'Tai dau';
+    playAgainBtn.onclick = () => {
+        if (isPlayingWithAI) {
+            // Reset game for AI mode
+            gameBoard = Array(10).fill().map(() => Array(10).fill(''));
+            isMyTurn = true;
+            currentPlayer = 'X';
+            hideGameResult();
+            initializeGame(gameBoard, currentPlayer);
+        } else if (currentRoomId) {
+            socket.emit('rematchRequest', { roomId: currentRoomId });
+            playAgainBtn.disabled = true;
+            playAgainBtn.textContent = 'Dang cho doi thu...';
+        }
+    };
+}
+
+function showRematchRequest() {
+    const rematchRequest = document.getElementById('rematchRequest');
+    rematchRequest.classList.remove('hidden');
+}
+
+function hideRematchRequest() {
+    const rematchRequest = document.getElementById('rematchRequest');
+    rematchRequest.classList.add('hidden');
+}
+
+// Modal functions
+function showModal(title, message, onConfirm, onCancel) {
+    const modalDialog = document.getElementById('modalDialog');
+    const modalContent = modalDialog.querySelector('.modal-content');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+    const modalCancelBtn = document.getElementById('modalCancelBtn');
+    
+    modalTitle.textContent = title;
+    modalMessage.textContent = message;
+    
+    // Set up confirm button
+    modalConfirmBtn.onclick = () => {
+        if (onConfirm) {
+            onConfirm();
+        } else {
+            hideModal();
+        }
+    };
+    
+    // Set up cancel button
+    if (onCancel) {
+        modalCancelBtn.classList.remove('hidden');
+        modalCancelBtn.onclick = () => {
+            onCancel();
+        };
+    } else {
+        modalCancelBtn.classList.add('hidden');
+    }
+    
+    // Close modal when clicking on background
+    modalDialog.onclick = (e) => {
+        if (e.target === modalDialog) {
+            if (onCancel) {
+                onCancel();
+            } else {
+                hideModal();
+            }
+        }
+    };
+    
+    // Prevent closing when clicking on modal content
+    modalContent.onclick = (e) => {
+        e.stopPropagation();
+    };
+    
+    modalDialog.classList.remove('hidden');
+}
+
+function hideModal() {
+    const modalDialog = document.getElementById('modalDialog');
+    modalDialog.classList.add('hidden');
+}
