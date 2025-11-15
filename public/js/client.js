@@ -630,3 +630,56 @@ function hideModal() {
     const modalDialog = document.getElementById('modalDialog');
     modalDialog.classList.add('hidden');
 }
+
+// Chat functions
+function addChatMessage(message) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat-message ${message.player.toLowerCase()}`;
+    
+    // Use player name if available, otherwise use default
+    const playerName = message.playerName || `Nguoi choi ${message.player}`;
+    
+    messageDiv.innerHTML = `
+        <div class="chat-message-header">${escapeHtml(playerName)}</div>
+        <div class="chat-message-text">${escapeHtml(message.message)}</div>
+        <div class="chat-message-time">${message.timestamp}</div>
+    `;
+    
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function clearChat() {
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.innerHTML = '';
+}
+
+// Chat input
+const chatInput = document.getElementById('chatInput');
+const sendChatBtn = document.getElementById('sendChatBtn');
+
+function sendChatMessage() {
+    const message = chatInput.value.trim();
+    if (message && currentRoomId) {
+        socket.emit('chat', {
+            roomId: currentRoomId,
+            message: message
+        });
+        chatInput.value = '';
+    }
+}
+
+sendChatBtn.addEventListener('click', sendChatMessage);
+chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        sendChatMessage();
+    }
+});
+
+// Utility function
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
