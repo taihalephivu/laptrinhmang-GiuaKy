@@ -281,3 +281,25 @@ io.on('connection', (socket) => {
       });
     }
   });
+
+  // Chat message
+  socket.on('chat', (data) => {
+    const { roomId, message } = data;
+    const room = rooms.get(roomId);
+    const playerData = players.get(socket.id);
+
+    if (!room || !playerData) {
+      return;
+    }
+
+    const chatMessage = {
+      player: playerData.player,
+      playerName: playerData.name || `Player ${playerData.player}`,
+      message: message,
+      timestamp: new Date().toLocaleTimeString()
+    };
+
+    room.messages.push(chatMessage);
+
+    io.to(roomId).emit('chatMessage', chatMessage);
+  });
