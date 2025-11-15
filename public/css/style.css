@@ -302,3 +302,147 @@ body::before {
 .hidden {
   display: none !important;
 }
+
+/* Game Screen */
+.game-container {
+  background: #353545;
+  border: 4px solid #00ff00;
+  border-style: double;
+  padding: 20px;
+  padding-top: 60px;
+  box-shadow: 0 0 0 2px #000, 0 0 30px #00ff00,
+    inset 0 0 30px rgba(0, 255, 0, 0.2);
+  max-width: 1200px;
+  width: 100%;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.game-container::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border: 2px solid #00ff00;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  font-weight: bold;
+  white-space: nowrap;
+  font-size: 0.65em;
+  border: 2px solid;
+  background: #1a1a1a;
+  box-shadow: inset 0 0 10px currentColor;
+  text-shadow: 0 0 5px currentColor;
+}
+
+.player-x {
+  color: #00ff00;
+  border-color: #00ff00;
+  text-shadow: 0 0 5px #00ff00;
+}
+
+.player-x.active {
+  background: #001100;
+  box-shadow: inset 0 0 15px #00ff00, 0 0 15px #00ff00;
+}
+
+.player-o {
+  color: #ffff00;
+  border-color: #ffff00;
+  text-shadow: 0 0 5px #ffff00;
+}
+
+.player-o.active {
+  background: #111100;
+  box-shadow: inset 0 0 15px #ffff00, 0 0 15px #ffff00;
+}
+
+.player-symbol {
+  font-size: 1.2em;
+  font-weight: normal;
+}
+
+.player-name {
+  font-size: 0.9em;
+}
+
+#currentTurn {
+  font-size: 0.75em;
+  font-weight: bold;
+  color: #00ff88;
+  text-shadow: 0 0 10px #00ff00, 2px 2px 0 #000, 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.game-content {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+  overflow: visible;
+  min-width: 0;
+  min-height: 0;
+  align-items: flex-start;
+}
+
+.board-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+  padding: 10px;
+}
+
+.board-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.players-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 15px;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.player-label-top {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.player-label-top.player-label-left {
+  justify-content: flex-start;
+}
+
+.player-label-top.player-label-right {
+  justify-content: flex-end;
+}
+
+.game-status-top {
+  text-align: center;
+  flex: 0 0 auto;
+}

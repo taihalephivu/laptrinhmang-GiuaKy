@@ -458,3 +458,64 @@ function makeMove(row, col) {
     gameBoard[row][col] = currentSymbol;
     updateGameBoard(gameBoard);
 }
+
+function checkGameEnd() {
+    // Check for win
+    if (ai.checkWin(gameBoard, 'X')) {
+        showGameResult('X', 'X');
+        return true;
+    }
+    if (ai.checkWin(gameBoard, 'O')) {
+        showGameResult('O', 'O');
+        return true;
+    }
+
+    // Check for draw
+    let isDraw = true;
+    for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+            if (!gameBoard[i][j]) {
+                isDraw = false;
+                break;
+            }
+        }
+        if (!isDraw) break;
+    }
+
+    if (isDraw) {
+        showGameResult('draw', null);
+        return true;
+    }
+
+    return false;
+}
+
+function updateCurrentPlayer(player) {
+    const currentPlayerElement = document.getElementById('currentPlayer');
+    currentPlayerElement.textContent = player;
+    
+    // Update player highlighting
+    const playerX = document.querySelector('.player-x');
+    const playerO = document.querySelector('.player-o');
+    
+    playerX.classList.remove('active');
+    playerO.classList.remove('active');
+    
+    if (player === 'X') {
+        playerX.classList.add('active');
+    } else {
+        playerO.classList.add('active');
+    }
+}
+
+function updatePlayerNames(players) {
+    if (players && players.length > 0) {
+        players.forEach(playerData => {
+            if (playerData.player === 'X') {
+                document.getElementById('playerXName').textContent = playerData.name || 'Nguoi choi X';
+            } else if (playerData.player === 'O') {
+                document.getElementById('playerOName').textContent = playerData.name || 'Nguoi choi O';
+            }
+        });
+    }
+}
