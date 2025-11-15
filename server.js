@@ -342,3 +342,45 @@ io.on('connection', (socket) => {
       io.to(otherPlayerId).emit('rematchRequested', { roomId });
     }
   });
+
+  // Rematch accept
+  socket.on('rematchAccept', (data) => {
+    const { roomId } = data;
+    const room = rooms.get(roomId);
+    const playerData = players.get(socket.id);
+
+    if (!room || !playerData || room.status !== 'finished') {
+      return;
+    }
+
+    // Reset game
+    room.board = createEmptyBoard();
+    room.currentPlayer = 'X';
+    room.status = 'playing';
+
+    // Notify both players
+    const allPlayers = room.players.map(id => players.get(id));
+    io.to(roomId).emit('rematchAccepted', {
+      roomId,
+      board: room.board,
+      currentPlayer: room.currentPlayer,
+      players: allPlayers
+    });
+  });
+
+  // Rematch decline
+  socket.on('rematchDecline', (data) => {
+    const { roomId } = data;
+    const room = rooms.get(roomId);
+    const playerData = players.get(socket.id);
+
+    if (!room || !playerData) {
+      return;
+    }
+
+    // Notify other player
+    const otherPlayerId = room.players.find(id => id !== socket.id);
+    if (otherPlayerId) {
+      io.to(otherPlayerId).emit('rematchDeclined', { roomId });
+    }
+  });
