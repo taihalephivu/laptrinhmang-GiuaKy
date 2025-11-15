@@ -11,8 +11,8 @@ const io = new Server(server);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Game state management
-const rooms = new Map(); 
-const players = new Map(); 
+const rooms = new Map(); // roomId -> { players: [], board: [], currentPlayer: 'X', status: 'waiting'|'playing'|'finished' }
+const players = new Map(); // socketId -> { roomId, player: 'X'|'O', name }
 
 // Generate unique room ID
 function generateRoomId() {
@@ -70,19 +70,20 @@ function checkWin(board, row, col, player) {
 
 // Check if board is full (draw)
 function checkDraw(board) {
-    for (let row of board) {
-      for (let cell of row) {
-        if (cell === null) {
-          return false;
-        }
+  for (let row of board) {
+    for (let cell of row) {
+      if (cell === null) {
+        return false;
       }
     }
-    return true;
   }
-  
-// connect socket
+  return true;
+}
+
+// Handle socket connections
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
+
   // Create room
   socket.on('create', (data) => {
     const roomId = generateRoomId();
@@ -142,13 +143,6 @@ io.on('connection', (socket) => {
       currentPlayer: room.currentPlayer,
       players: allPlayers
     });
-
-
-// Handle connections
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
-
-
     
     // Notify other player
     io.to(roomId).emit('playerJoined', { 
@@ -225,7 +219,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  
   // Make a move
   socket.on('move', (data) => {
     const { roomId, row, col } = data;
@@ -384,3 +377,29 @@ io.on('connection', (socket) => {
       io.to(otherPlayerId).emit('rematchDeclined', { roomId });
     }
   });
+
+  // Disconnect
+  socket.on('disconnect', () => {
+    const playerData = players.get(socket.id);
+    if (playerData) {
+      const room = rooms.get(playerData.roomId);
+      if (room) {
+        room.players = room.players.filter(id => id !== socket.id);
+        if (room.players.length === 0) {
+          rooms.delete(playerData.roomId);
+        } else {
+          // Notify remaining player
+          io.to(playerData.roomId).emit('playerLeft', { message: 'Doi thu da roi phong!' });
+        }
+      }
+      players.delete(socket.id);
+    }
+    console.log('User disconnected:', socket.id);
+  });
+});
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
+
