@@ -11,8 +11,8 @@ const io = new Server(server);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Game state management
-const rooms = new Map(); 
-const players = new Map(); 
+const rooms = new Map(); // roomId -> { players: [], board: [], currentPlayer: 'X', status: 'waiting'|'playing'|'finished' }
+const players = new Map(); // socketId -> { roomId, player: 'X'|'O', name }
 
 // Generate unique room ID
 function generateRoomId() {
@@ -70,19 +70,20 @@ function checkWin(board, row, col, player) {
 
 // Check if board is full (draw)
 function checkDraw(board) {
-    for (let row of board) {
-      for (let cell of row) {
-        if (cell === null) {
-          return false;
-        }
+  for (let row of board) {
+    for (let cell of row) {
+      if (cell === null) {
+        return false;
       }
     }
-    return true;
   }
-  
-// connect socket
+  return true;
+}
+
+// Handle socket connections
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
+
   // Create room
   socket.on('create', (data) => {
     const roomId = generateRoomId();
@@ -142,13 +143,6 @@ io.on('connection', (socket) => {
       currentPlayer: room.currentPlayer,
       players: allPlayers
     });
-
-
-// Handle connections
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
-
-
     
     // Notify other player
     io.to(roomId).emit('playerJoined', { 
@@ -225,7 +219,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  
   // Make a move
   socket.on('move', (data) => {
     const { roomId, row, col } = data;
@@ -281,3 +274,132 @@ io.on('connection', (socket) => {
       });
     }
   });
+
+  // Chat message
+  socket.on('chat', (data) => {
+    const { roomId, message } = data;
+    const room = rooms.get(roomId);
+    const playerData = players.get(socket.id);
+
+    if (!room || !playerData) {
+      return;
+    }
+
+    const chatMessage = {
+      player: playerData.player,
+      playerName: playerData.name || `Player ${playerData.player}`,
+      message: message,
+      timestamp: new Date().toLocaleTimeString()
+    };
+
+    room.messages.push(chatMessage);
+
+    io.to(roomId).emit('chatMessage', chatMessage);
+  });
+
+  // Leave room
+  socket.on('leaveRoom', (data) => {
+    const { roomId } = data;
+    const playerData = players.get(socket.id);
+    
+    if (playerData && playerData.roomId === roomId) {
+      const room = rooms.get(roomId);
+      if (room) {
+        room.players = room.players.filter(id => id !== socket.id);
+        socket.leave(roomId);
+        
+        if (room.players.length === 0) {
+          rooms.delete(roomId);
+        } else {
+          // Notify remaining player
+          io.to(roomId).emit('playerLeft', { message: 'Doi thu da roi phong!' });
+        }
+      }
+      players.delete(socket.id);
+    }
+  });
+
+  // Rematch request
+  socket.on('rematchRequest', (data) => {
+    const { roomId } = data;
+    const room = rooms.get(roomId);
+    const playerData = players.get(socket.id);
+
+    if (!room || !playerData || room.status !== 'finished') {
+      return;
+    }
+
+    // Notify other player
+    const otherPlayerId = room.players.find(id => id !== socket.id);
+    if (otherPlayerId) {
+      io.to(otherPlayerId).emit('rematchRequested', { roomId });
+    }
+  });
+
+  // Rematch accept
+  socket.on('rematchAccept', (data) => {
+    const { roomId } = data;
+    const room = rooms.get(roomId);
+    const playerData = players.get(socket.id);
+
+    if (!room || !playerData || room.status !== 'finished') {
+      return;
+    }
+
+    // Reset game
+    room.board = createEmptyBoard();
+    room.currentPlayer = 'X';
+    room.status = 'playing';
+
+    // Notify both players
+    const allPlayers = room.players.map(id => players.get(id));
+    io.to(roomId).emit('rematchAccepted', {
+      roomId,
+      board: room.board,
+      currentPlayer: room.currentPlayer,
+      players: allPlayers
+    });
+  });
+
+  // Rematch decline
+  socket.on('rematchDecline', (data) => {
+    const { roomId } = data;
+    const room = rooms.get(roomId);
+    const playerData = players.get(socket.id);
+
+    if (!room || !playerData) {
+      return;
+    }
+
+    // Notify other player
+    const otherPlayerId = room.players.find(id => id !== socket.id);
+    if (otherPlayerId) {
+      io.to(otherPlayerId).emit('rematchDeclined', { roomId });
+    }
+  });
+
+  // Disconnect
+  socket.on('disconnect', () => {
+    const playerData = players.get(socket.id);
+    if (playerData) {
+      const room = rooms.get(playerData.roomId);
+      if (room) {
+        room.players = room.players.filter(id => id !== socket.id);
+        if (room.players.length === 0) {
+          rooms.delete(playerData.roomId);
+        } else {
+          // Notify remaining player
+          io.to(playerData.roomId).emit('playerLeft', { message: 'Doi thu da roi phong!' });
+        }
+      }
+      players.delete(socket.id);
+    }
+    console.log('User disconnected:', socket.id);
+  });
+});
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
+
